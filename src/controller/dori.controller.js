@@ -20,6 +20,9 @@ const getAlldorilar = async (req, res, next) => {
   }
 };
 
+
+
+
 const getOnedori = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -56,12 +59,16 @@ const createdori = async (req, res, next) => {
       throw new BaseException(`dorixona with ID: ${dorixona} not found`, 400);
     }
 
+    const fail=  req.file?.filename
+
     const dori = await doriModel.create({
       name,
       price,
       dorixona,
       description,
-      imageUrl: req.file?.filename || "", 
+      imageUrl: fail
+        ? `${process.env.BASE_URL}/uploads/${req.file.filename}`
+        : null, 
     });
 
     await dorixonaModel.updateOne(

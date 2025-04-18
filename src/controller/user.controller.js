@@ -1,5 +1,4 @@
 import { compare, hash } from "bcrypt";
-import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 import { BaseException } from "../exception/base.exception.js";
@@ -20,13 +19,10 @@ const register = async (req, res, next) => {
     });
 
     if (foundedUser) {
-      // throw new BaseException(
-      //   "User already exists, try another email or phone number",
-      //   409
-      // );
-      return res.render("register", {
-        error: "User already exists, try another email or phone number",
-      });
+      throw new BaseException(
+        "User already exists, try another email or phone number",
+        409
+      );
     }
 
     const passwordHash = await hash(password, 10);
@@ -44,15 +40,12 @@ const register = async (req, res, next) => {
       text: `Salom ${name}! Bizning Fast Food restoranimizda muvaffaqiyatli ro'yhatdan o'tdingiz`,
     });
 
-    // return res.redirect("/users/login");
-
     res.status(201).send({
       message: "success",
       data: user,
     });
   } catch (error) {
-    // next(error);
-    console.log(error);
+    next(error);
   }
 };
 
@@ -63,22 +56,20 @@ const login = async (req, res, next) => {
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      // throw new BaseException("User not found", 404);
-      return res.render("login", { error: "User not found" });
+      throw new BaseException("User not found", 404);
     }
 
     const isMatch = await compare(password, user.password);
 
     if (!isMatch) {
-      // throw new BaseException("Invalid password", 401);
-      return res.render("login", { error: "Invalid password" });
+      throw new BaseException("Invalid password", 401);
     }
 
     const accessToken = jwt.sign(
       { id: user.id, role: user.role },
       ACCESS_TOKEN_SECRET,
       {
-        expiresIn: +ACCESS_TOKEN_EXPIRE_TIME,
+        expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
         algorithm: "HS256",
       }
     );
@@ -87,93 +78,28 @@ const login = async (req, res, next) => {
       { id: user.id, role: user.role },
       REFRESH_TOKEN_SECRET,
       {
-        expiresIn: +REFRESH_TOKEN_EXPIRE_TIME,
+        expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
         algorithm: "HS256",
       }
     );
 
     res.cookie("accessToken", accessToken, {
-      maxAge: +ACCESS_TOKEN_EXPIRE_TIME * 1000,
+      maxAge: 60 * 1000,
       httpOnly: true,
     });
 
     res.cookie("refreshToken", refreshToken, {
-      maxAge: +REFRESH_TOKEN_EXPIRE_TIME * 1000,
+      maxAge: 2 * 60 * 1000,
       httpOnly: true,
     });
 
-    res.cookie("user", JSON.stringify(user));
-
-    return res.redirect("/");
-  } catch (error) {
-    next(error);
-  }
-};
-
-const forgotPassword = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      return res.render("forgot-password", {
-        error: "User not found",
-        message: null,
-      });
-    }
-
-    const server_base_url = "http://localhost:3000";
-
-    const token = crypto.randomBytes(50);
-    user.token = token.toString("hex");
-
-    await user.save();
-
-    await sendMail({
-      to: email,
-      subject: "Reset password",
-      html: `
-      <h2>Quyidagi link orqali yangilang</h2>
-      <a href="${server_base_url}/users/reset-password?token=${user.token}">Link</a>
-      `,
-    });
-
-    res.render("forgot-password", {
-      message: "Emailingizga link yuborildi!",
-      error: null,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const resetPassword = async (req, res, next) => {
-  try {
-    const { password } = req.body;
-    const { token } = req.query;
-    console.log(password, token);
-
-    if (!token) {
-      return res.redirect("/users/login");
-    }
-
-    const user = await userModel.findOne({ token });
-
-    if (!user) {
-      return res.redirect("/users/forgot-password");
-    }
-
-    const passwordHash = await hash(password, 10);
-
-    user.password = passwordHash;
-
-    await user.save();
-
-    res.render("reset-password", {
-      message: "Password yangilandi",
-      error: null,
-      token: null,
+    res.send({
+      message: "success",
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
+      data: user,
     });
   } catch (error) {
     next(error);
@@ -186,7 +112,7 @@ const getAllUsers = async (req, res) => {
       path: "orders",
       populate: {
         path: "orderItems",
-        populate: "dori",
+        populate: "dorilar",
       },
     });
 
@@ -216,14 +142,6 @@ const refresh = async (req, res, next) => {
       algorithm: "HS256",
     });
 
-    res.cookie("accessToken", accessToken, {
-      expires: ACCESS_TOKEN_EXPIRE_TIME,
-    });
-
-    res.cookie("refreshToken", newRefreshToken, {
-      expires: REFRESH_TOKEN_EXPIRE_TIME,
-    });
-
     res.send({
       message: "success",
       tokens: {
@@ -242,11 +160,5 @@ const refresh = async (req, res, next) => {
   }
 };
 
-export default {
-  register,
-  getAllUsers,
-  login,
-  refresh,
-  forgotPassword,
-  resetPassword,
-};
+export default { register, getAllUsers, login, refresh };
+                                                                

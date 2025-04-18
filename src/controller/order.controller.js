@@ -1,7 +1,7 @@
 import { isValidObjectId } from "mongoose";
 import { BaseException } from "../exception/base.exception.js";
 import userModel from "../models/user.model.js";
-import DoriModel from "../models/dori.model.js";
+import doriModel from "../models/dori.model.js";
 import orderModel from "../models/order.model.js";
 import orderItemModel from "../models/order-item.model.js";
 
@@ -24,13 +24,13 @@ const createOrder = async (req, res, next) => {
 
     let totalPrice = 0;
     for (let oi of orderItems) {
-      const food = await DoriModel.findById(oi.foodId);
+      const dori = await doriModel.findById(oi.doriId);
 
-      if (!food) {
+      if (!dori) {
         throw new BaseException("Taom topilmadi", 404);
       }
 
-      totalPrice += food.price * oi.quantity;
+      totalPrice += dori.price * oi.quantity;
     }
 
     const order = new orderModel({
@@ -40,7 +40,7 @@ const createOrder = async (req, res, next) => {
 
     for (let oi of orderItems) {
       const orderItem = new orderItemModel({
-        food: oi.foodId,
+        dori: oi.doriId,
         order: order._id,
         quantity: oi.quantity,
       });
@@ -73,9 +73,9 @@ const getAllOrders = async (req, res, next) => {
       .find()
       .populate({
         path: "orderItems",
-        populate: "food",
+        populate: "dorilar",
       })
-      .populate("user");
+      .populate("users");
 
     res.send({
       message: "success",
@@ -87,7 +87,5 @@ const getAllOrders = async (req, res, next) => {
   }
 };
 
-export default {
-  createOrder,
-  getAllOrders
-};
+export default { createOrder, getAllOrders };
+

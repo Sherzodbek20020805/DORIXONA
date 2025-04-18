@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema(
   {
-    food: {
+    dori: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "",
+      ref: "dori",
       required: true,
     },
     order: {

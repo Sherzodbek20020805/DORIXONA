@@ -14,8 +14,8 @@ doriRouter
   .get("/:id", Protected(false), Roles(ROLES.ALL), doriController.getOnedori)
   .post(
     "/",
-    Protected(true),
-    Roles(ROLES.RESTAURANT_OWNER, ROLES.SUPER_ADMIN),
+    // Protected(true),
+    // Roles(ROLES.RESTAURANT_OWNER, ROLES.SUPER_ADMIN),
     upload.single("image"),
     ValidationMiddleware(createdoriSchema),
     doriController.createdori

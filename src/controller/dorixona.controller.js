@@ -1,10 +1,12 @@
 import { isValidObjectId } from "mongoose";
-import DorixonaModel from "../models/dorixona.model.js";
+import dorixonaModel from "../models/dorixona.model.js";
 import { BaseException } from "../exception/base.exception.js";
 
-const getAllCategories = async (req, res, next) => {
+const getAlldorixona = async (req, res, next) => {
   try {
-    const categories = await DorixonaModel.find().populate("dorilar");
+    const categories = await dorixonaModel.find()
+      // .populate("dorilar", "-dorixona -createdAt -updatedAt")
+      // .select("-createdAt -updatedAt");
 
     res.send({
       message: "success",
@@ -15,7 +17,9 @@ const getAllCategories = async (req, res, next) => {
   }
 };
 
-const getOneCategory = async (req, res, next) => {
+
+
+const getOnedorixona = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -23,26 +27,26 @@ const getOneCategory = async (req, res, next) => {
       throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400);
     }
 
-    const category = await DorixonaModel.findById(id).populate("dorilar");
+    const dorixona = await dorixonaModel.findById(id).populate("dorilar");
 
-    if (!category) {
-      throw new BaseException(`Category with ID: ${id} not found`, 404);
+    if (!dorixona) {
+      throw new BaseException(`dorixona with ID: ${id} not found`, 404);
     }
 
     res.send({
       message: "success",
-      data: category,
+      data: dorixona,
     });
   } catch (error) {
     next(error);
   }
 };
 
-const createCategory = async (req, res, next) => {
+const createdorixona = async (req, res, next) => {
   try {
     const { nomi, manzil, lokatsiya, ishVaqti, aloqa } = req.body;
 
-    const category = await DorixonaModel.create({
+    const dorixona = await dorixonaModel.create({
       nomi,
       manzil,
       lokatsiya,
@@ -52,7 +56,7 @@ const createCategory = async (req, res, next) => {
 
     res.send({
       message: "success",
-      data: category,
+      data: dorixona,
     });
   } catch (error) {
     console.log(error);
@@ -60,7 +64,7 @@ const createCategory = async (req, res, next) => {
   }
 };
 
-const updateCategory = async (req, res, next) => {
+const updatedorixona = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nomi, manzil, lokatsiya, ishVaqti, aloqa } = req.body;
@@ -69,7 +73,7 @@ const updateCategory = async (req, res, next) => {
       throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400);
     }
 
-    const updatedCategory = await DorixonaModel.findByIdAndUpdate(
+    const updateddorixona = await dorixonaModel.findByIdAndUpdate(
       id,
       { nomi, manzil, lokatsiya, ishVaqti, aloqa },
       { new: true }
@@ -77,14 +81,14 @@ const updateCategory = async (req, res, next) => {
 
     res.send({
       message: "success",
-      data: updatedCategory,
+      data: updateddorixona,
     });
   } catch (error) {
     next(error);
   }
 };
 
-const deleteCategory = async (req, res, next) => {
+const deletedorixona = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -92,11 +96,11 @@ const deleteCategory = async (req, res, next) => {
       throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400);
     }
 
-    const category = await DorixonaModel.findByIdAndDelete(id);
+    const dorixona = await dorixonaModel.findByIdAndDelete(id);
 
     res.send({
       message: "success",
-      data: category,
+      data: dorixona,
     });
   } catch (error) {
     next(error);
@@ -104,9 +108,11 @@ const deleteCategory = async (req, res, next) => {
 };
 
 export default {
-  getAllCategories,
-  createCategory,
-  getOneCategory,
-  updateCategory,
-  deleteCategory,
+  getAlldorixona,
+  createdorixona,
+  getOnedorixona,
+  updatedorixona,
+  deletedorixona,
 };
+  
+

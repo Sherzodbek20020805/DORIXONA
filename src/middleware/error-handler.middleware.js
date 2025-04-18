@@ -26,6 +26,7 @@ export const ErrorHandlerMiddleware = (err, req, res, __) => {
   }
 
   res.status(500).send({
-    message: "Internal Server Error",
+    message: "Serverda xatolik yuz berdi",
+    error: err.message,
   });
 };

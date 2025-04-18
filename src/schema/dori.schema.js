@@ -1,16 +1,19 @@
 import Joi from "joi";
 
-export const createDoriSchema = Joi.object({
+export const createdoriSchema = Joi.object({
   name: Joi.string().required(),
-  description: Joi.string(),
+  description: Joi.string().optional(),
   price: Joi.number().positive().required(),
-  imageUrl: Joi.string(),
-  category: Joi.string().required(),
+  imageUrl: Joi.string().optional(),
+  dorixona: Joi.string().required(), // ObjectId bo'lishi kerak
 }).required();
 
 
-export const updateDoriSchema = Joi.object({
-  name: Joi.string(),
-  description: Joi.string(),
-  price: Joi.number().positive(),
+
+export const updatedoriSchema = Joi.object({
+  name: Joi.string().optional(),
+  description: Joi.string().optional(),
+  price: Joi.number().positive().optional(),
+  imageUrl: Joi.string().optional(),
 });
+

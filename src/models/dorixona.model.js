@@ -41,3 +41,4 @@ const dorixonaSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("dorixona", dorixonaSchema);
+
