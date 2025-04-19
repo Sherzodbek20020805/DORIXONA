@@ -60,17 +60,18 @@ const createdori = async (req, res, next) => {
     }
 
     const fail=  req.file?.filename
-
+    console.log(fail);
+    
     const dori = await doriModel.create({
       name,
       price,
       dorixona,
       description,
       imageUrl: fail
-        ? `${process.env.BASE_URL}/uploads/${req.file.filename}`
-        : null, 
+         
     });
-
+    console.log(dori);
+    
     await dorixonaModel.updateOne(
       { _id: dorixona },
       { $push: { dorilar: dori._id } }

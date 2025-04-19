@@ -11,8 +11,8 @@ const orderRouter = Router();
 orderRouter
   .post(
     "/",
-    Protected(true),
-    Roles(ROLES.ALL),
+    // Protected(true),
+    // Roles(ROLES.ALL),
     ValidationMiddleware(createOrderSchema),
     orderController.createOrder
   )

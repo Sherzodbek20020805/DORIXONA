@@ -13,7 +13,7 @@ const orderItemSchema = new mongoose.Schema(
       required: true,
     },
     quantity: {
-      type: mongoose.SchemaTypes.Int32,
+      type: Number, // Int32 emas!
       required: true,
       min: 1,
       max: 10000,

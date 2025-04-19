@@ -1,12 +1,21 @@
-import { join } from "node:path";
+import { join, extname } from "node:path";
+import { existsSync, mkdirSync } from "node:fs";
 import multer from "multer";
 
+
+const uploadDir = join(process.cwd(), "uploads");
+if (!existsSync(uploadDir)) {
+  mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, join(process.cwd(), "uploads"));
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now() + `.${file.mimetype.split("/")[1]}`);
+  filename: (_req, file, cb) => {
+    const ext = extname(file.originalname); // .jpg, .png va hokazo
+    const uniqueName = file.fieldname + "-" + Date.now() + ext;
+    cb(null, uniqueName);
   },
 });
 

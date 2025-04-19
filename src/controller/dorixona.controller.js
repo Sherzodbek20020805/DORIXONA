@@ -5,7 +5,7 @@ import { BaseException } from "../exception/base.exception.js";
 const getAlldorixona = async (req, res, next) => {
   try {
     const categories = await dorixonaModel.find()
-      // .populate("dorilar", "-dorixona -createdAt -updatedAt")
+      .populate("dorilar", "-dorixona -createdAt -updatedAt")
       // .select("-createdAt -updatedAt");
 
     res.send({

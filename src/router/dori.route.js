@@ -16,7 +16,7 @@ doriRouter
     "/",
     // Protected(true),
     // Roles(ROLES.RESTAURANT_OWNER, ROLES.SUPER_ADMIN),
-    upload.single("image"),
+    upload.single("imageUrl"),
     ValidationMiddleware(createdoriSchema),
     doriController.createdori
   )

@@ -1,34 +1,37 @@
 import { Router } from "express";
-import categoryModel from "../models/dorixona.model.js";
-import foodModel from "../models/dori.model.js";
+import dorixonaModel from "../models/dorixona.model.js";
+import doriModel from "../models/dori.model.js";
 
 const pageRouter = Router();
 
 pageRouter.get("/", async (req, res) => {
   const { category = "all" } = req.query;
 
-  const categories = await categoryModel.find().populate("foods");
-  const foods = await foodModel.find();
-  const allCategory = {
-    id: "all",
-    name: "All",
-    foods,
+  const dorixona = await dorixonaModel.find().populate("dorilar");
+  const dori = await doriModel.find();
+  const allDorixona = {
+    _id: "all",
+    nomi: "All",
+    dorilar:dori,
     isActive: true,
   };
 
-  const categoryRes = [allCategory, ...categories];
-  let foodRes = foods;
+  const categoryRes = [allDorixona, ...dorixona];
+  let doriRes = dori;
 
   categoryRes.forEach((r) => {
-    if (r.id == category) {
+    console.log(r);
+
+    if (r._id == category) {
       r.isActive = true;
-      foodRes = r.foods;
+      doriRes = r.dorilar;
     } else {
       r.isActive = false;
     }
   });
+  console.log(doriRes);
 
-  res.render("index", { categories: categoryRes, foods: foodRes });
+  res.render("index", { dorixona: categoryRes, dori: doriRes });
 });
 
 pageRouter.get("/users/login", (req, res) => {
